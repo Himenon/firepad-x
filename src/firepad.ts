@@ -215,12 +215,10 @@ export class Firepad implements IFirepad {
 
   public enable() {
     this._databaseAdapter.enable();
-    //for text changes
     this._editorAdapter.enable();
   }
 
   public disable() {
-    console.log("disable");
     this._databaseAdapter.disable();
     this._editorAdapter.disable();
   }
@@ -314,7 +312,7 @@ export class Firepad implements IFirepad {
     );
     Utils.validateFalse(
       this._zombie,
-      `You can"t use a Firepad after calling dispose()!  [called ${func}]`
+      `You can't use a Firepad after calling dispose()!  [called ${func}]`
     );
   }
 }
