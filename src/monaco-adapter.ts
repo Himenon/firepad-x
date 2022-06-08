@@ -37,6 +37,7 @@ export class MonacoAdapter implements IEditorAdapter {
   protected readonly _remoteCursors: Map<string, IRemoteCursor>;
   protected readonly _cursorWidgetController: ICursorWidgetController;
 
+  protected _isDisabled: boolean = false;
   protected _ignoreChanges: boolean;
   protected _lastDocLines: string[];
   protected _lastCursorRange: monaco.Selection | null;
@@ -46,6 +47,7 @@ export class MonacoAdapter implements IEditorAdapter {
   protected _originalUndo: Handler<void> | null;
   protected _originalRedo: Handler<void> | null;
   protected _initiated: boolean;
+  protected operationsToBeApplied: ITextOperation[] = [];
 
   /**
    * Wraps a monaco editor in adapter to work with rest of Firepad
@@ -73,6 +75,23 @@ export class MonacoAdapter implements IEditorAdapter {
     if (!avoidListeners) {
       this._init();
     }
+  }
+
+  public enable() {
+    this._isDisabled = false;
+    this._ignoreChanges = false;
+    this._initMonacoEvents();
+    this.operationsToBeApplied.forEach((operation) => {
+      this.applyOperation(operation);
+    });
+    this.operationsToBeApplied = [];
+  }
+
+  public disable() {
+    this._isDisabled = true;
+    this._ignoreChanges = true;
+    this._disposables.forEach((disposable) => disposable.dispose());
+    this._disposables.splice(0, this._disposables.length);
   }
 
   deregisterUndo(callback?: any): void {
@@ -104,6 +123,10 @@ export class MonacoAdapter implements IEditorAdapter {
   protected _init(): void {
     this._emitter = mitt();
 
+    this._initMonacoEvents();
+  }
+
+  private _initMonacoEvents() {
     this._disposables.push(
       this._cursorWidgetController,
       this._monaco.onDidBlurEditorWidget(() => {
@@ -541,6 +564,11 @@ export class MonacoAdapter implements IEditorAdapter {
   }
 
   applyOperation(operation: ITextOperation): void {
+    if (this._isDisabled) {
+      this.operationsToBeApplied.push(operation);
+      return;
+    }
+
     if (!operation.isNoop()) {
       this._ignoreChanges = true;
     }
@@ -632,6 +660,10 @@ export class MonacoAdapter implements IEditorAdapter {
   }
 
   protected _onModelChange(_ev: monaco.editor.IModelChangedEvent): void {
+    if (this._isDisabled) {
+      return;
+    }
+
     const newModel = this._getModel();
 
     if (!newModel) {

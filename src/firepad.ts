@@ -1,3 +1,4 @@
+import { FirebaseAdapter } from "./firebase-adapter";
 import {
   Cursor,
   DatabaseAdapterEvent,
@@ -8,6 +9,7 @@ import {
   IEditorAdapter,
 } from "@operational-transformation/plaintext-editor";
 import mitt, { Emitter, Handler } from "mitt";
+import { MonacoAdapter } from "./monaco-adapter";
 import * as Utils from "./utils";
 
 export enum FirepadEvent {
@@ -93,13 +95,21 @@ export interface IFirepad extends Utils.IDisposable {
    * @param option - Configuration option (same as constructor).
    */
   getConfiguration(option: keyof IFirepadConstructorOptions): any;
+  /**
+   *Enable firepad if it is disabled.
+   */
+  enable(): void;
+  /**
+   * Disable firepad without destroying it.
+   */
+  disable(): void;
 }
 
 export class Firepad implements IFirepad {
   protected readonly _options: IFirepadConstructorOptions;
   protected readonly _editorClient: IEditorClient;
-  protected readonly _editorAdapter: IEditorAdapter;
-  protected readonly _databaseAdapter: IDatabaseAdapter;
+  protected readonly _editorAdapter: MonacoAdapter;
+  protected readonly _databaseAdapter: FirebaseAdapter;
 
   protected _ready: boolean;
   protected _zombie: boolean;
@@ -125,8 +135,8 @@ export class Firepad implements IFirepad {
     this._zombie = false;
     this._options = options;
 
-    this._databaseAdapter = databaseAdapter;
-    this._editorAdapter = editorAdapter;
+    this._databaseAdapter = databaseAdapter as FirebaseAdapter;
+    this._editorAdapter = editorAdapter as MonacoAdapter;
     this._editorClient = new EditorClient(databaseAdapter, editorAdapter);
 
     this._emitter = mitt();
@@ -170,6 +180,18 @@ export class Firepad implements IFirepad {
         this._trigger(FirepadEvent.Error, error);
       });
     });
+  }
+
+  public enable() {
+    this._databaseAdapter.enable();
+    //for text changes
+    this._editorAdapter.enable();
+  }
+
+  public disable() {
+    console.log("disable");
+    this._databaseAdapter.disable();
+    this._editorAdapter.disable();
   }
 
   getConfiguration(option: keyof IFirepadConstructorOptions): any {
@@ -253,7 +275,7 @@ export class Firepad implements IFirepad {
     );
     Utils.validateFalse(
       this._zombie,
-      `You can't use a Firepad after calling dispose()!  [called ${func}]`
+      `You can"t use a Firepad after calling dispose()!  [called ${func}]`
     );
   }
 }
