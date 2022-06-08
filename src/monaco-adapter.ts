@@ -35,6 +35,7 @@ export class MonacoAdapter implements IEditorAdapter {
   protected readonly _remoteCursors: Map<ClientIDType, IRemoteCursor>;
   protected readonly _cursorWidgetController: ICursorWidgetController;
 
+  protected _isDisabled: boolean = false;
   protected _ignoreChanges: boolean;
   protected _lastDocLines: string[];
   protected _lastCursorRange: monaco.Selection | null;
@@ -44,6 +45,7 @@ export class MonacoAdapter implements IEditorAdapter {
   protected _originalUndo: UndoRedoCallbackType | null;
   protected _originalRedo: UndoRedoCallbackType | null;
   protected _initiated: boolean;
+  protected operationsToBeApplied: ITextOperation[] = [];
 
   /**
    * Wraps a monaco editor in adapter to work with rest of Firepad
@@ -73,6 +75,49 @@ export class MonacoAdapter implements IEditorAdapter {
     }
   }
 
+  public enable() {
+    this._isDisabled = false;
+    this._ignoreChanges = false;
+    this._initMonacoEvents();
+    this.operationsToBeApplied.forEach((operation) => {
+      this.applyOperation(operation);
+    });
+    this.operationsToBeApplied = [];
+  }
+
+  public disable() {
+    this._isDisabled = true;
+    this._ignoreChanges = true;
+    this._disposables.forEach((disposable) => disposable.dispose());
+    this._disposables.splice(0, this._disposables.length);
+  }
+
+  deregisterUndo(callback?: any): void {
+    const model = this._getModel();
+    if (!model) {
+      return;
+    }
+
+    if (model.undo !== this._originalUndo) {
+      model.undo = this._originalUndo;
+    }
+
+    this._originalUndo = null;
+  }
+
+  deregisterRedo(callback?: any): void {
+    const model = this._getModel();
+    if (!model) {
+      return;
+    }
+
+    if (model.redo !== this._originalRedo) {
+      model.redo = this._originalRedo;
+    }
+
+    this._originalRedo = null;
+  }
+
   protected _init(): void {
     this._emitter = new EventEmitter([
       EditorAdapterEvent.Blur,
@@ -84,6 +129,10 @@ export class MonacoAdapter implements IEditorAdapter {
       EditorAdapterEvent.Undo,
     ]);
 
+    this._initMonacoEvents();
+  }
+
+  private _initMonacoEvents() {
     this._disposables.push(
       this._cursorWidgetController,
       this._monaco.onDidBlurEditorWidget(() => {
@@ -528,6 +577,11 @@ export class MonacoAdapter implements IEditorAdapter {
   }
 
   applyOperation(operation: ITextOperation): void {
+    if (this._isDisabled) {
+      this.operationsToBeApplied.push(operation);
+      return;
+    }
+
     if (!operation.isNoop()) {
       this._ignoreChanges = true;
     }
@@ -613,6 +667,10 @@ export class MonacoAdapter implements IEditorAdapter {
   }
 
   protected _onModelChange(_ev: monaco.editor.IModelChangedEvent): void {
+    if (this._isDisabled) {
+      return;
+    }
+
     const newModel = this._getModel();
 
     if (!newModel) {
