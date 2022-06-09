@@ -95,6 +95,9 @@ export default class FirepadClassic implements IFirepad {
     this.init();
   }
 
+  public enable(): void {}
+  public disable(): void {}
+
   protected init(): void {
     this._databaseAdapter.on(DatabaseAdapterEvent.Ready, () => {
       this._ready = true;
