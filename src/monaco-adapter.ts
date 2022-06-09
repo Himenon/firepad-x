@@ -91,32 +91,6 @@ export class MonacoAdapter implements IEditorAdapter {
     this._disposables.splice(0, this._disposables.length);
   }
 
-  deregisterUndo(callback?: any): void {
-    const model = this._getModel();
-    if (!model) {
-      return;
-    }
-
-    if (model.undo !== this._originalUndo) {
-      model.undo = this._originalUndo;
-    }
-
-    this._originalUndo = null;
-  }
-
-  deregisterRedo(callback?: any): void {
-    const model = this._getModel();
-    if (!model) {
-      return;
-    }
-
-    if (model.redo !== this._originalRedo) {
-      model.redo = this._originalRedo;
-    }
-
-    this._originalRedo = null;
-  }
-
   protected _init(): void {
     this._emitter = new EventEmitter([
       EditorAdapterEvent.Blur,
