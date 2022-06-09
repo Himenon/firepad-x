@@ -1,5 +1,4 @@
 import * as monaco from "monaco-editor";
-
 import { Cursor, ICursor } from "./cursor";
 import {
   CursorWidgetController,
