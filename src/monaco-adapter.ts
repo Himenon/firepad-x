@@ -46,6 +46,14 @@ export class MonacoAdapter implements IEditorAdapter {
   protected _initiated: boolean;
   protected operationsToBeApplied: ITextOperation[] = [];
 
+  protected beforeApplyChangesCallbacks: ((
+    changes: monaco.editor.IIdentifiedSingleEditOperation[]
+  ) => void)[] = [];
+
+  protected afterApplyChangesCallbacks: ((
+    changes: monaco.editor.IIdentifiedSingleEditOperation[]
+  ) => void)[] = [];
+
   /**
    * Wraps a monaco editor in adapter to work with rest of Firepad
    * @param monacoInstance - Monaco Standalone Code Editor instance
@@ -74,23 +82,6 @@ export class MonacoAdapter implements IEditorAdapter {
     }
   }
 
-  public enable() {
-    this._isDisabled = false;
-    this._ignoreChanges = false;
-    this._initMonacoEvents();
-    this.operationsToBeApplied.forEach((operation) => {
-      this.applyOperation(operation);
-    });
-    this.operationsToBeApplied = [];
-  }
-
-  public disable() {
-    this._isDisabled = true;
-    this._ignoreChanges = true;
-    this._disposables.forEach((disposable) => disposable.dispose());
-    this._disposables.splice(0, this._disposables.length);
-  }
-
   protected _init(): void {
     this._emitter = new EventEmitter([
       EditorAdapterEvent.Blur,
@@ -103,6 +94,16 @@ export class MonacoAdapter implements IEditorAdapter {
     ]);
 
     this._initMonacoEvents();
+  }
+
+  public enable() {
+    this._isDisabled = false;
+    this._ignoreChanges = false;
+    this._initMonacoEvents();
+    this.operationsToBeApplied.forEach((operation) => {
+      this.applyOperation(operation);
+    });
+    this.operationsToBeApplied = [];
   }
 
   private _initMonacoEvents() {
@@ -128,6 +129,25 @@ export class MonacoAdapter implements IEditorAdapter {
         }
       )
     );
+  }
+
+  public disable() {
+    this._isDisabled = true;
+    this._ignoreChanges = true;
+    this._disposables.forEach((disposable) => disposable.dispose());
+    this._disposables.splice(0, this._disposables.length);
+  }
+
+  public beforeApplyChanges(
+    callback: (changes: monaco.editor.IIdentifiedSingleEditOperation[]) => void
+  ): void {
+    this.beforeApplyChangesCallbacks.push(callback);
+  }
+
+  public afterApplyChanges(
+    callback: (changes: monaco.editor.IIdentifiedSingleEditOperation[]) => void
+  ): void {
+    this.afterApplyChangesCallbacks.push(callback);
   }
 
   dispose(): void {
@@ -549,7 +569,7 @@ export class MonacoAdapter implements IEditorAdapter {
     }
   }
 
-  applyOperation(operation: ITextOperation): void {
+  async applyOperation(operation: ITextOperation): Promise<void> {
     if (this._isDisabled) {
       this.operationsToBeApplied.push(operation);
       return;
@@ -570,6 +590,10 @@ export class MonacoAdapter implements IEditorAdapter {
       model
     );
 
+    await Promise.all(
+      this.beforeApplyChangesCallbacks.map((cb) => cb(changes))
+    );
+
     /** Changes exists to be applied */
     if (changes.length) {
       this._applyChangesToMonaco(changes);
@@ -581,6 +605,8 @@ export class MonacoAdapter implements IEditorAdapter {
     }
 
     this._ignoreChanges = false;
+
+    await Promise.all(this.afterApplyChangesCallbacks.map((cb) => cb(changes)));
   }
 
   invertOperation(operation: ITextOperation): ITextOperation {

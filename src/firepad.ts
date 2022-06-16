@@ -1,3 +1,4 @@
+import { editor } from "monaco-editor";
 import { Cursor } from "./cursor";
 import {
   DatabaseAdapterEvent,
@@ -112,6 +113,14 @@ export interface IFirepad extends Utils.IDisposable {
    * Disable firepad without destroying it.
    */
   disable(): void;
+
+  beforeApplyChanges(
+    callback: (changes: editor.IIdentifiedSingleEditOperation[]) => void
+  ): void;
+
+  afterApplyChanges(
+    callback: (changes: editor.IIdentifiedSingleEditOperation[]) => void
+  ): void;
 }
 
 export class Firepad implements IFirepad {
@@ -221,6 +230,18 @@ export class Firepad implements IFirepad {
   public disable() {
     this._databaseAdapter.disable();
     this._editorAdapter.disable();
+  }
+
+  public beforeApplyChanges(
+    callback: (changes: editor.IIdentifiedSingleEditOperation[]) => void
+  ) {
+    this._editorAdapter.beforeApplyChanges(callback);
+  }
+
+  public afterApplyChanges(
+    callback: (changes: editor.IIdentifiedSingleEditOperation[]) => void
+  ) {
+    this._editorAdapter.afterApplyChanges(callback);
   }
 
   getConfiguration(option: keyof IFirepadConstructorOptions): any {
