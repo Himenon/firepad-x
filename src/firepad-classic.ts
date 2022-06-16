@@ -95,8 +95,25 @@ export default class FirepadClassic implements IFirepad {
     this.init();
   }
 
-  public enable(): void {}
-  public disable(): void {}
+  public enable(): void {
+    throw new Error("Method not implemented.");
+  }
+
+  public disable(): void {
+    throw new Error("Method not implemented.");
+  }
+
+  public beforeApplyChanges(
+    callback: (changes: monaco.editor.IIdentifiedSingleEditOperation[]) => void
+  ): void {
+    throw new Error("Method not implemented.");
+  }
+
+  public afterApplyChanges(
+    callback: (changes: monaco.editor.IIdentifiedSingleEditOperation[]) => void
+  ): void {
+    throw new Error("Method not implemented.");
+  }
 
   protected init(): void {
     this._databaseAdapter.on(DatabaseAdapterEvent.Ready, () => {
