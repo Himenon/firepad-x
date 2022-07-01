@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.3"></a>
+## 1.0.3 (2022-07-01)
+
+
+### Bug Fixes
+
+* package json ([#4](https://github.com/Himenon/firepad-x/issues/4)) ([9bde755](https://github.com/Himenon/firepad-x/commit/9bde755))
+
+
+
+
+
 <a name="1.0.2"></a>
 ## 1.0.2 (2022-07-01)
 
