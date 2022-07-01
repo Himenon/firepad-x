@@ -1,3 +1,16 @@
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+<a name="1.0.1"></a>
+
+## 1.0.1 (2022-07-01)
+
+### Chores
+
+- update ([#2](https://github.com/interviewstreet/firepad-x/issues/2)) ([97d6c89](https://github.com/interviewstreet/firepad-x/commit/97d6c89))
+
 # CHANGELOG
 
 <!--
@@ -30,11 +43,11 @@ No Changes
 
 ### Changed
 
-- Fix a bug monaco-adapter/_operationFromMonacoChange function
+- Fix a bug monaco-adapter/\_operationFromMonacoChange function
 - Revert https://github.com/interviewstreet/firepad-x/commit/2aebf79871d3fc9bf21e9b056a0faa60c6da0b3a
 - Revert https://github.com/interviewstreet/firepad-x/commit/a12177892c692b44c106d60f2819fbf7f1094f22
 - No breaking change on external APIs.
-- Revert to firebase v7.12.0 (https://github.com/interviewstreet/firepad-x/commit/03910ce475e04ddcab2e683877f579bfcbd32d91). 
+- Revert to firebase v7.12.0 (https://github.com/interviewstreet/firepad-x/commit/03910ce475e04ddcab2e683877f579bfcbd32d91).
 
 ## v0.3.1 [#44](https://github.com/interviewstreet/firepad-x/pull/44)
 
