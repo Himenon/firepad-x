@@ -16,7 +16,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "es5",
-    "lib": ["es6", "dom"],
+    "lib": ["es6", "dom", "ESNext"],
     "sourceMap": false,
     "rootDir": "../src",
     "outDir": "../lib"

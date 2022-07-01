@@ -1,35 +1,7 @@
 {
-  "name": "@hackerrank/firepad",
+  "name": "@himenon/firepad",
+  "version": "1.0.0",
   "description": "Collaborative text editing powered by Firebase",
-  "version": "0.4.1-beta",
-  "author": {
-    "email": "bprogyan@gmail.com",
-    "name": "Progyan Bhattacharya",
-    "url": "https://github.com/Progyan1997"
-  },
-  "contributors": [
-    "Michael Lehenbauer <michael@firebase.com>",
-    "Brijesh Bittu <brijesh@hackerrank.com>",
-    "Nishchay Kaushik <nishchay@hackerrank.com>",
-    "Mohanasundar <mohana.sundar@hackerrank.com>"
-  ],
-  "maintainers": [
-    {
-      "email": "developers@hackerrank.com",
-      "name": "HackerRank",
-      "url": "https://hackerrank.com"
-    },
-    "Firebase (https://firebase.google.com/)"
-  ],
-  "homepage": "http://www.firepad.io/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/interviewstreet/firepad-x.git"
-  },
-  "bugs": {
-    "url": "https://github.com/interviewstreet/firepad-x/issues"
-  },
-  "license": "MIT",
   "keywords": [
     "text",
     "word",
@@ -38,6 +10,34 @@
     "firebase",
     "realtime",
     "collaborative"
+  ],
+  "homepage": "http://www.firepad.io/",
+  "bugs": {
+    "url": "https://github.com/interviewstreet/firepad-x/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/interviewstreet/firepad-x.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Progyan Bhattacharya",
+    "email": "bprogyan@gmail.com",
+    "url": "https://github.com/Progyan1997"
+  },
+  "maintainers": [
+    {
+      "name": "Himenon",
+      "email": "k.himeno314@gmail.com",
+      "url": "https://github.com/Himenon"
+    },
+    "Firebase (https://firebase.google.com/)"
+  ],
+  "contributors": [
+    "Michael Lehenbauer <michael@firebase.com>",
+    "Brijesh Bittu <brijesh@hackerrank.com>",
+    "Nishchay Kaushik <nishchay@hackerrank.com>",
+    "Mohanasundar <mohana.sundar@hackerrank.com>"
   ],
   "main": "dist/firepad.min.js",
   "module": "es/index.js",
@@ -48,69 +48,38 @@
     "types/**",
     "LICENSE",
     "package.json",
-    "yarn.lock"
+    "pnpm-lock.yaml"
   ],
-  "engines": {
-    "node": ">= 10.17.0"
-  },
-  "peerDependencies": {
-    "firebase": "7.12.0",
-    "monaco-editor": "0.18.1"
-  },
-  "dependencies": {
-    "uuid": "8.3.2"
-  },
-  "devDependencies": {
-    "@babel/core": "7.13.16",
-    "@babel/plugin-proposal-class-properties": "7.13.0",
-    "@babel/plugin-proposal-object-rest-spread": "7.13.8",
-    "@babel/preset-env": "7.13.15",
-    "@babel/preset-typescript": "7.13.0",
-    "@types/jest": "26.0.23",
-    "@types/uuid": "8.3.0",
-    "babel-loader": "8.2.2",
-    "check-yarn-lock": "0.2.1",
-    "child-process-promise": "2.2.1",
-    "core-js": "3.11.0",
-    "css-loader": "5.2.4",
-    "firebase": "7.12.0",
-    "git-format-staged": "2.1.1",
-    "husky": "^7.0.0",
-    "jest": "27.0.3",
-    "monaco-editor": "0.18.1",
-    "monaco-editor-webpack-plugin": "1.7.0",
-    "prettier": "2.2.1",
-    "rimraf": "3.0.2",
-    "source-map-loader": "2.0.1",
-    "style-loader": "2.0.0",
-    "ts-jest": "27.0.3",
-    "typescript": "4.2.4",
-    "webpack": "5.34.0",
-    "webpack-cli": "4.6.0",
-    "webpack-dev-server": "3.11.2"
-  },
   "scripts": {
-    "prepare": "husky install",
-    "start": "webpack serve --hot --progress --mode development --port 9000 --host 0.0.0.0 --config configs/webpack.dev.config.js",
-    "start:prod": "webpack serve --hot --progress --mode production --port 9000 --host 0.0.0.0 --config configs/webpack.dev.config.js",
-    "clean": "rimraf dist es lib types",
-    "prebuild": "yarn clean",
-    "build": "yarn build:esm && yarn build:cjs && yarn build:dist",
+    "prebuild": "pnpm clean",
+    "build": "pnpm build:esm && pnpm build:cjs && pnpm build:dist",
+    "build:cjs": "tsc -p configs/tsconfig.json",
     "build:dist": "NODE_ENV=production webpack --config configs/webpack.config.js",
     "build:esm": "tsc -p configs/tsconfig.module.json",
-    "build:cjs": "tsc -p configs/tsconfig.json",
-    "lint": "yarn lint:lockfile && yarn lint:prettier",
-    "lint:prettier": "prettier --write configs examples src test",
-    "lint:lockfile": "check-yarn-lock",
+    "clean": "rimraf dist es lib types",
+    "lerna:version:up": "lerna version --yes",
     "release": "./scripts/tag-and-version",
-    "test": "TEST_ENV=true jest --colors",
-    "test:ci": "yarn test --ci --silent",
-    "test:watch": "yarn test --watch"
+    "release:github:registry": "pnpm publish --registry https://npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}",
+    "release:npm:registry": "pnpm publish",
+    "start": "webpack serve --hot --progress --mode development --port 9000 --host 0.0.0.0 --config configs/webpack.dev.config.js",
+    "start:prod": "webpack serve --hot --progress --mode production --port 9000 --host 0.0.0.0 --config configs/webpack.dev.config.js",
+    "test": "TEST_ENV=true jest --config jest.config.js --colors",
+    "test:ci": "pnpm test --ci --silent",
+    "test:watch": "pnpm test --watch"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "git-format-staged -f \"yarn lint\" ."
-    }
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,jsx,json,yml,yaml,html,md}": [
+      "prettier --write"
+    ],
+    "*.{ts,tsx}": [
+      "prettier --write"
+    ],
+    "package.json": [
+      "sort-package-json"
+    ]
   },
   "jest": {
     "collectCoverage": true,
@@ -122,5 +91,45 @@
     ],
     "preset": "ts-jest",
     "testEnvironment": "node"
+  },
+  "dependencies": {
+    "uuid": "8.3.2"
+  },
+  "devDependencies": {
+    "@babel/core": "7.18.6",
+    "@babel/plugin-proposal-class-properties": "7.18.6",
+    "@babel/plugin-proposal-object-rest-spread": "7.18.6",
+    "@babel/preset-env": "7.18.6",
+    "@babel/preset-typescript": "7.18.6",
+    "@types/jest": "28.1.4",
+    "@types/uuid": "8.3.4",
+    "babel-loader": "8.2.5",
+    "child-process-promise": "2.2.1",
+    "core-js": "3.23.3",
+    "css-loader": "6.7.1",
+    "firebase": "8.10.0",
+    "jest": "28.1.2",
+    "lerna": "^5.1.6",
+    "lint-staged": "^13.0.3",
+    "monaco-editor": "0.18.1",
+    "monaco-editor-webpack-plugin": "1.7.0",
+    "prettier": "2.7.1",
+    "rimraf": "3.0.2",
+    "simple-git-hooks": "^2.8.0",
+    "sort-package-json": "^1.57.0",
+    "source-map-loader": "4.0.0",
+    "style-loader": "3.3.1",
+    "ts-jest": "28.0.5",
+    "typescript": "4.7.4",
+    "webpack": "5.73.0",
+    "webpack-cli": "4.10.0",
+    "webpack-dev-server": "4.9.3"
+  },
+  "peerDependencies": {
+    "firebase": "9.8.4",
+    "monaco-editor": "0.33.0"
+  },
+  "engines": {
+    "node": ">= 10.17.0"
   }
 }
