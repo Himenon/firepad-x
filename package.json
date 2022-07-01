@@ -1,35 +1,7 @@
 {
   "name": "@himenon/firepad",
-  "description": "Collaborative text editing powered by Firebase",
   "version": "0.4.1-beta",
-  "author": {
-    "email": "bprogyan@gmail.com",
-    "name": "Progyan Bhattacharya",
-    "url": "https://github.com/Progyan1997"
-  },
-  "contributors": [
-    "Michael Lehenbauer <michael@firebase.com>",
-    "Brijesh Bittu <brijesh@hackerrank.com>",
-    "Nishchay Kaushik <nishchay@hackerrank.com>",
-    "Mohanasundar <mohana.sundar@hackerrank.com>"
-  ],
-  "maintainers": [
-    {
-      "email": "k.himeno314@gmail.com",
-      "name": "Himenon",
-      "url": "https://github.com/Himenon"
-    },
-    "Firebase (https://firebase.google.com/)"
-  ],
-  "homepage": "http://www.firepad.io/",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/interviewstreet/firepad-x.git"
-  },
-  "bugs": {
-    "url": "https://github.com/interviewstreet/firepad-x/issues"
-  },
-  "license": "MIT",
+  "description": "Collaborative text editing powered by Firebase",
   "keywords": [
     "text",
     "word",
@@ -38,6 +10,34 @@
     "firebase",
     "realtime",
     "collaborative"
+  ],
+  "homepage": "http://www.firepad.io/",
+  "bugs": {
+    "url": "https://github.com/interviewstreet/firepad-x/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/interviewstreet/firepad-x.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Progyan Bhattacharya",
+    "email": "bprogyan@gmail.com",
+    "url": "https://github.com/Progyan1997"
+  },
+  "maintainers": [
+    {
+      "name": "Himenon",
+      "email": "k.himeno314@gmail.com",
+      "url": "https://github.com/Himenon"
+    },
+    "Firebase (https://firebase.google.com/)"
+  ],
+  "contributors": [
+    "Michael Lehenbauer <michael@firebase.com>",
+    "Brijesh Bittu <brijesh@hackerrank.com>",
+    "Nishchay Kaushik <nishchay@hackerrank.com>",
+    "Mohanasundar <mohana.sundar@hackerrank.com>"
   ],
   "main": "dist/firepad.min.js",
   "module": "es/index.js",
@@ -50,12 +50,47 @@
     "package.json",
     "pnpm-lock.yaml"
   ],
-  "engines": {
-    "node": ">= 10.17.0"
+  "scripts": {
+    "prebuild": "pnpm clean",
+    "build": "pnpm build:esm && pnpm build:cjs && pnpm build:dist",
+    "build:cjs": "tsc -p configs/tsconfig.json",
+    "build:dist": "NODE_ENV=production webpack --config configs/webpack.config.js",
+    "build:esm": "tsc -p configs/tsconfig.module.json",
+    "clean": "rimraf dist es lib types",
+    "lerna:version:up": "lerna version --yes",
+    "release": "./scripts/tag-and-version",
+    "release:github:registry": "pnpm publish --registry https://npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}",
+    "release:npm:registry": "pnpm publish",
+    "start": "webpack serve --hot --progress --mode development --port 9000 --host 0.0.0.0 --config configs/webpack.dev.config.js",
+    "start:prod": "webpack serve --hot --progress --mode production --port 9000 --host 0.0.0.0 --config configs/webpack.dev.config.js",
+    "test": "TEST_ENV=true jest --colors",
+    "test:ci": "pnpm test --ci --silent",
+    "test:watch": "pnpm test --watch"
   },
-  "peerDependencies": {
-    "firebase": "9.8.4",
-    "monaco-editor": "0.33.0"
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged"
+  },
+  "lint-staged": {
+    "*.{js,jsx,json,yml,yaml,html,md}": [
+      "prettier --write"
+    ],
+    "*.{ts,tsx}": [
+      "prettier --write"
+    ],
+    "package.json": [
+      "sort-package-json"
+    ]
+  },
+  "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "**/src/**",
+      "!**/src/firepad-classic.ts",
+      "!**/src/index.ts",
+      "!**/src/utils.ts"
+    ],
+    "preset": "ts-jest",
+    "testEnvironment": "node"
   },
   "dependencies": {
     "uuid": "8.3.2"
@@ -90,43 +125,11 @@
     "webpack-cli": "4.10.0",
     "webpack-dev-server": "4.9.3"
   },
-  "scripts": {
-    "start": "webpack serve --hot --progress --mode development --port 9000 --host 0.0.0.0 --config configs/webpack.dev.config.js",
-    "start:prod": "webpack serve --hot --progress --mode production --port 9000 --host 0.0.0.0 --config configs/webpack.dev.config.js",
-    "clean": "rimraf dist es lib types",
-    "prebuild": "pnpm clean",
-    "build": "pnpm build:esm && pnpm build:cjs && pnpm build:dist",
-    "build:dist": "NODE_ENV=production webpack --config configs/webpack.config.js",
-    "build:esm": "tsc -p configs/tsconfig.module.json",
-    "build:cjs": "tsc -p configs/tsconfig.json",
-    "release": "./scripts/tag-and-version",
-    "test": "TEST_ENV=true jest --colors",
-    "test:ci": "pnpm test --ci --silent",
-    "test:watch": "pnpm test --watch"
+  "peerDependencies": {
+    "firebase": "9.8.4",
+    "monaco-editor": "0.33.0"
   },
-  "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged"
-  },
-  "lint-staged": {
-    "*.{js,jsx,json,yml,yaml,html,md}": [
-      "prettier --write"
-    ],
-    "*.{ts,tsx}": [
-      "prettier --write"
-    ],
-    "package.json": [
-      "sort-package-json"
-    ]
-  },
-  "jest": {
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "**/src/**",
-      "!**/src/firepad-classic.ts",
-      "!**/src/index.ts",
-      "!**/src/utils.ts"
-    ],
-    "preset": "ts-jest",
-    "testEnvironment": "node"
+  "engines": {
+    "node": ">= 10.17.0"
   }
 }
