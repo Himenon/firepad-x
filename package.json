@@ -63,7 +63,7 @@
     "release:npm:registry": "pnpm publish",
     "start": "webpack serve --hot --progress --mode development --port 9000 --host 0.0.0.0 --config configs/webpack.dev.config.js",
     "start:prod": "webpack serve --hot --progress --mode production --port 9000 --host 0.0.0.0 --config configs/webpack.dev.config.js",
-    "test": "TEST_ENV=true jest --colors",
+    "test": "TEST_ENV=true jest --config jest.config.js --colors",
     "test:ci": "pnpm test --ci --silent",
     "test:watch": "pnpm test --watch"
   },
