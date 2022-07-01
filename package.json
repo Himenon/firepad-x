@@ -105,6 +105,7 @@
     "@types/uuid": "8.3.4",
     "babel-loader": "8.2.5",
     "child-process-promise": "2.2.1",
+    "conventional-changelog-angular-all": "^1.7.0",
     "core-js": "3.23.3",
     "css-loader": "6.7.1",
     "firebase": "8.10.0",
