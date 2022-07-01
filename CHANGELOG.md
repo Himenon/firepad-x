@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.2"></a>
+## 1.0.2 (2022-07-01)
+
+
+### Bug Fixes
+
+* publish config ([#3](https://github.com/interviewstreet/firepad-x/issues/3)) ([3e50425](https://github.com/interviewstreet/firepad-x/commit/3e50425))
+
+
+
+
+
 <a name="1.0.1"></a>
 
 ## 1.0.1 (2022-07-01)
