@@ -1,6 +1,6 @@
 {
   "name": "@himenon/firepad",
-  "version": "0.4.1-beta",
+  "version": "1.0.0",
   "description": "Collaborative text editing powered by Firebase",
   "keywords": [
     "text",
